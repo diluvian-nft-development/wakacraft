@@ -128,7 +128,11 @@ public class WakaCommand {
 
             try (Jedis jedis = jedisPool.getResource()) {
                 if (!jedis.sismember("wakacraft-current-players", wakaPlayer.getPlayerName())) {
-                    return;
+                    proxiedPlayer.sendMessage(
+                        TextComponent.fromLegacyText(
+                            colorize("&e" + wakaPlayer.getFormatted() + " &eof waka time.")
+                        )
+                    );
                 }
 
                 proxiedPlayer.sendMessage(
@@ -137,12 +141,6 @@ public class WakaCommand {
                     )
                 );
             }
-
-            proxiedPlayer.sendMessage(
-                TextComponent.fromLegacyText(
-                    colorize("&e" + wakaPlayer.getFormatted() + " &eof waka time.")
-                )
-            );
         });
     }
 
