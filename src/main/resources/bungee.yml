@@ -1,0 +1,6 @@
+name: Wakacraft
+main: com.teamdiluvian.wakacraft
+version: 1.0.0
+author: TeamDiluvian
+depends:
+    - LuckPerms
