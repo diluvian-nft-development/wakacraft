@@ -123,8 +123,6 @@ public class SQLWakaDatabase {
                 Instant created_at = resultSet.getTimestamp("created_at")
                     .toInstant();
 
-                System.out.println("created_at = " + created_at.toEpochMilli());
-
                 return WakaPlayer.of(
                     unique != null ? unique : uuid, name,
                     resultSet.getLong("measure_time"),
