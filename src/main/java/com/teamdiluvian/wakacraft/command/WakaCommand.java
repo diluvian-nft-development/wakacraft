@@ -51,6 +51,7 @@ public class WakaCommand {
 
     @Command(
         name = "wakacraft",
+        permission = "wakacraft.admin",
         target = CommandTarget.PLAYER
     )
     public void handleHelpCommand(Context<ProxiedPlayer> context) {

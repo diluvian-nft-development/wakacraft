@@ -28,10 +28,7 @@ package com.teamdiluvian.wakacraft.listener;
 import com.teamdiluvian.wakacraft.persistent.SQLWakaDatabase;
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.event.ClientConnectEvent;
-import net.md_5.bungee.api.event.PlayerDisconnectEvent;
-import net.md_5.bungee.api.event.PostLoginEvent;
-import net.md_5.bungee.api.event.ServerConnectedEvent;
+import net.md_5.bungee.api.event.*;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
@@ -46,8 +43,12 @@ public class WakaHandler implements Listener {
     private final SQLWakaDatabase wakaDatabase;
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerConnect(PostLoginEvent event) {
+    public void onPlayerConnect(ServerConnectedEvent event) {
         ProxiedPlayer proxiedPlayer = event.getPlayer();
+
+        if (!proxiedPlayer.hasPermission("wakacraft.use")) {
+            return;
+        }
 
         wakaDatabase.loadPlayer(proxiedPlayer.getUniqueId(), proxiedPlayer.getName())
             .whenComplete((player, throwable) -> {
@@ -58,8 +59,12 @@ public class WakaHandler implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerDisconnect(PlayerDisconnectEvent event) {
+    public void onPlayerDisconnect(ServerDisconnectEvent event) {
         ProxiedPlayer proxiedPlayer = event.getPlayer();
+
+        if (!proxiedPlayer.hasPermission("wakacraft.use")) {
+            return;
+        }
 
         wakaDatabase.savePlayer(proxiedPlayer.getUniqueId(), proxiedPlayer.getName(), System.currentTimeMillis())
             .whenComplete((player, throwable) -> {
