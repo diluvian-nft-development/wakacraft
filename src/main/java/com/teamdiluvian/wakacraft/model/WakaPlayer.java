@@ -51,8 +51,8 @@ public class WakaPlayer {
     private long measureTime;
     private long created;
 
-    public String getFormatted() {
-        long millis = (measureTime - created) / 1000;
+    public String getFormatted(long measure) {
+        long millis = (measure - created) / 1000;
 
         StringBuilder builder = new StringBuilder();
 
@@ -76,6 +76,10 @@ public class WakaPlayer {
         }
 
         return builder.toString();
+    }
+
+    public String getFormatted() {
+        return getFormatted(measureTime);
     }
 
 }

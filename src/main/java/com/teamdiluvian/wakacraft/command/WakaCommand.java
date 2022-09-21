@@ -51,7 +51,6 @@ public class WakaCommand {
 
     @Command(
         name = "wakacraft",
-        permission = "wakacraft.admin",
         target = CommandTarget.PLAYER
     )
     public void handleHelpCommand(Context<ProxiedPlayer> context) {
@@ -101,6 +100,15 @@ public class WakaCommand {
                 return;
             }
 
+            if (wakaPlayer.getUniqueId() == proxiedPlayer.getUniqueId()) {
+                proxiedPlayer.sendMessage(
+                    TextComponent.fromLegacyText(
+                        colorize("&eYour waka time is &a" + wakaPlayer.getFormatted(System.currentTimeMillis()))
+                    )
+                );
+                return;
+            }
+
             proxiedPlayer.sendMessage(
                 TextComponent.fromLegacyText(
                     colorize("&e" + wakaPlayer.getFormatted() + " &eof waka time.")
@@ -110,7 +118,8 @@ public class WakaCommand {
     }
 
     @Command(
-        name = "wakacraft.reset"
+        name = "wakacraft.reset",
+        permission = "wakacraft.admin"
     )
     public void handleResetCommand(Context<ProxiedPlayer> context, @Optional String name) {
         ProxiedPlayer proxiedPlayer = context.getSender();
@@ -128,7 +137,8 @@ public class WakaCommand {
     }
 
     @Command(
-        name = "wakacraft.set"
+        name = "wakacraft.set",
+        permission = "wakacraft.admin"
     )
     public void handleSetCommand(Context<ProxiedPlayer> context, String name, long time) {
         ProxiedPlayer proxiedPlayer = context.getSender();
