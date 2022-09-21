@@ -11,11 +11,30 @@ repositories {
     maven {
         url = 'https://oss.sonatype.org/content/repositories/snapshots'
     } // This lets gradle find the BungeeCord files online
+
+    maven {
+        url = 'https://jitpack.io'
+    }
 }
 
 dependencies {
-    compileOnly(
-        'net.md-5:bungeecord-api:1.19-R0.1-SNAPSHOT',
-        'net.luckperms:api:5.4'
+    compileOnly('net.md-5:bungeecord-api:1.19-R0.1-SNAPSHOT')
+
+    implementation(
+        'com.zaxxer:HikariCP:5.0.1',
+        'org.jetbrains:annotations:23.0.0',
+        'com.github.SaiintBrisson.command-framework:bungee:1.2.0'
     )
+
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.24'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
+}
+
+jar {
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
