@@ -31,6 +31,8 @@ import com.teamdiluvian.wakacraft.persistent.SQLWakaDatabase;
 import com.teamdiluvian.wakacraft.persistent.connector.HikariWakaConnector;
 import me.saiintbrisson.bungee.command.BungeeFrame;
 import net.md_5.bungee.api.plugin.Plugin;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+import redis.clients.jedis.JedisPool;
 
 import java.io.File;
 import java.io.FileReader;
@@ -46,6 +48,7 @@ import java.util.Properties;
 public class WakaPlugin extends Plugin {
 
     private SQLWakaDatabase wakaDatabase;
+    private JedisPool jedisPool;
 
     @Override
     public void onLoad() {
@@ -75,16 +78,21 @@ public class WakaPlugin extends Plugin {
         connector.connect();
 
         wakaDatabase = new SQLWakaDatabase(connector);
+
+        jedisPool = new JedisPool(
+            new GenericObjectPoolConfig<>(),
+            properties.getProperty("redis.url")
+        );
     }
 
     @Override
     public void onEnable() {
-        getProxy().getPluginManager().registerListener(this, new WakaHandler(wakaDatabase));
+        getProxy().getPluginManager().registerListener(this, new WakaHandler(wakaDatabase, jedisPool));
 
         BungeeFrame bungeeFrame = new BungeeFrame(this);
 
         bungeeFrame.registerCommands(
-            new WakaCommand(wakaDatabase)
+            new WakaCommand(wakaDatabase, jedisPool)
         );
     }
 
@@ -92,5 +100,7 @@ public class WakaPlugin extends Plugin {
     public void onDisable() {
         wakaDatabase.getConnector()
             .disconnect();
+
+        jedisPool.close();
     }
 }
