@@ -34,8 +34,10 @@ import me.saiintbrisson.minecraft.command.command.Context;
 import me.saiintbrisson.minecraft.command.target.CommandTarget;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.Arrays;
@@ -46,6 +48,8 @@ import java.util.Arrays;
  */
 @RequiredArgsConstructor
 public class WakaCommand {
+
+    private final ProxyServer proxyServer = ProxyServer.getInstance();
 
     private final SQLWakaDatabase wakaDatabase;
 
@@ -104,6 +108,37 @@ public class WakaCommand {
                 proxiedPlayer.sendMessage(
                     TextComponent.fromLegacyText(
                         colorize("&eYour waka time is &a" + wakaPlayer.getFormatted(System.currentTimeMillis()))
+                    )
+                );
+                return;
+            }
+
+            ProxiedPlayer target = proxyServer.getPlayer(wakaPlayer.getPlayerName());
+            if (target != null) {
+                proxiedPlayer.sendMessage(
+                    TextComponent.fromLegacyText(
+                        colorize("&eThe waka time of &a" + target.getName() + " &eis &a" + wakaPlayer.getFormatted(System.currentTimeMillis()))
+                    )
+                );
+                return;
+            }
+
+            String targetName = wakaPlayer.getPlayerName();
+
+            boolean exists = false;
+            for (ServerInfo serverInfo : proxyServer.getServers().values()) {
+                for (ProxiedPlayer player : serverInfo.getPlayers()) {
+                    if (player.getName().equals(targetName)) {
+                        exists = true;
+                        break;
+                    }
+                }
+            }
+
+            if (exists) {
+                proxiedPlayer.sendMessage(
+                    TextComponent.fromLegacyText(
+                        colorize("&eThe waka time of &a" + wakaPlayer.getPlayerName() + " &eis &a" + wakaPlayer.getFormatted(System.currentTimeMillis()))
                     )
                 );
                 return;
