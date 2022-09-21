@@ -52,18 +52,30 @@ public class WakaPlayer {
     private long created;
 
     public String getFormatted() {
-        long millis = (measureTime - created) / 1000,
-            seconds = millis % 60,
-            minutes = (millis / 60) % 60,
-            hours = (millis / (60 * 60)) % 24,
-            days = (millis / (60 * 60 * 24)) % 30,
-            months = (millis / (60 * 60 * 24 * 30)) % 12,
-            years = (millis / (60 * 60 * 24 * 30 * 12));
+        long millis = (measureTime - created) / 1000;
 
-        return String.format(
-            "%02d years, %02d months, %02d days, %02d hours, %02d minutes and %02d seconds",
-            years, months, days, hours, minutes, seconds
-        );
+        StringBuilder builder = new StringBuilder();
+
+        if (millis >= 86400) {
+            builder.append(millis / 86400).append("d ");
+            millis %= 86400;
+        }
+
+        if (millis >= 3600) {
+            builder.append(millis / 3600).append("h ");
+            millis %= 3600;
+        }
+
+        if (millis >= 60) {
+            builder.append(millis / 60).append("m ");
+            millis %= 60;
+        }
+
+        if (millis > 0) {
+            builder.append(millis).append("s");
+        }
+
+        return builder.toString();
     }
 
 }

@@ -49,10 +49,6 @@ public class WakaHandler implements Listener {
     public void onPlayerConnect(PostLoginEvent event) {
         ProxiedPlayer proxiedPlayer = event.getPlayer();
 
-        if (!proxiedPlayer.hasPermission("wakacraft.use")) {
-            return;
-        }
-
         wakaDatabase.loadPlayer(proxiedPlayer.getUniqueId(), proxiedPlayer.getName())
             .whenComplete((player, throwable) -> {
                 if (throwable != null) {
@@ -64,10 +60,6 @@ public class WakaHandler implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerDisconnect(PlayerDisconnectEvent event) {
         ProxiedPlayer proxiedPlayer = event.getPlayer();
-
-        if (!proxiedPlayer.hasPermission("wakacraft.use")) {
-            return;
-        }
 
         wakaDatabase.savePlayer(proxiedPlayer.getUniqueId(), proxiedPlayer.getName(), System.currentTimeMillis())
             .whenComplete((player, throwable) -> {

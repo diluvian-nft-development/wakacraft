@@ -32,6 +32,7 @@ import me.saiintbrisson.minecraft.command.annotation.Command;
 import me.saiintbrisson.minecraft.command.annotation.Optional;
 import me.saiintbrisson.minecraft.command.command.Context;
 import me.saiintbrisson.minecraft.command.target.CommandTarget;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -50,8 +51,7 @@ public class WakaCommand {
 
     @Command(
         name = "wakacraft",
-        target = CommandTarget.PLAYER,
-        permission = "wakacraft.admin"
+        target = CommandTarget.PLAYER
     )
     public void handleHelpCommand(Context<ProxiedPlayer> context) {
         ProxiedPlayer proxiedPlayer = context.getSender();
@@ -66,7 +66,7 @@ public class WakaCommand {
         };
 
         BaseComponent[] components = TextComponent.fromLegacyText(
-            String.join("\n", messages)
+            colorize(String.join("\n", messages))
         );
 
         proxiedPlayer.sendMessage(components);
@@ -85,7 +85,7 @@ public class WakaCommand {
             if (throwable != null) {
                 proxiedPlayer.sendMessage(
                     TextComponent.fromLegacyText(
-                        "&cAn error occurred while trying to get the waka time of the player."
+                        colorize("&cAn error occurred while trying to get the waka time of the player.")
                     )
                 );
                 return;
@@ -94,7 +94,7 @@ public class WakaCommand {
             if (wakaPlayer == null) {
                 proxiedPlayer.sendMessage(
                     TextComponent.fromLegacyText(
-                        "&cThe player &e" + name + " &cwas not found."
+                        colorize("&cThe player &e" + name + " &cwas not found.")
                     )
                 );
                 return;
@@ -102,7 +102,7 @@ public class WakaCommand {
 
             proxiedPlayer.sendMessage(
                 TextComponent.fromLegacyText(
-                    "&e" + wakaPlayer.getFormatted() + " &7of waka time."
+                    colorize("&e" + wakaPlayer.getFormatted() + " &eof waka time.")
                 )
             );
         });
@@ -120,7 +120,7 @@ public class WakaCommand {
         ).thenAccept((unused) -> {
             proxiedPlayer.sendMessage(
                 TextComponent.fromLegacyText(
-                    "&aThe waka time of the player &e" + name + " &awas reset."
+                    colorize("&aThe waka time of the player &e" + name + " &awas reset.")
                 )
             );
         });
@@ -139,9 +139,13 @@ public class WakaCommand {
         ).thenAccept(unused -> {
             proxiedPlayer.sendMessage(
                 TextComponent.fromLegacyText(
-                    "&aThe waka time of the player &e" + name + " &awas set to &etime&a."
+                    colorize("&aThe waka time of the player &e" + name + " &awas set to &etime&a.")
                 )
             );
         });
+    }
+
+    private String colorize(String message) {
+        return ChatColor.translateAlternateColorCodes('&', message);
     }
 }

@@ -70,9 +70,11 @@ public class WakaPlugin extends Plugin {
             throw new RuntimeException(e);
         }
 
-        wakaDatabase = new SQLWakaDatabase(
-            new HikariWakaConnector(properties)
-        );
+        HikariWakaConnector connector = new HikariWakaConnector(properties);
+
+        connector.connect();
+
+        wakaDatabase = new SQLWakaDatabase(connector);
     }
 
     @Override
