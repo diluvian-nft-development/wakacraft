@@ -25,7 +25,19 @@
 
 package com.teamdiluvian.wakacraft;
 
+import com.teamdiluvian.wakacraft.command.WakaCommand;
+import com.teamdiluvian.wakacraft.listener.WakaHandler;
+import com.teamdiluvian.wakacraft.persistent.SQLWakaDatabase;
+import com.teamdiluvian.wakacraft.persistent.connector.HikariWakaConnector;
+import me.saiintbrisson.bungee.command.BungeeFrame;
 import net.md_5.bungee.api.plugin.Plugin;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.util.Properties;
 
 /**
  * @author Luiz Otávio de Farias Corrêa
@@ -33,18 +45,50 @@ import net.md_5.bungee.api.plugin.Plugin;
  */
 public class WakaPlugin extends Plugin {
 
+    private SQLWakaDatabase wakaDatabase;
+
     @Override
     public void onLoad() {
+        if (!getDataFolder().exists()) {
+            getDataFolder().mkdirs();
+        }
 
+        File databaseFile = new File(getDataFolder(), "database.properties");
+
+        if(!databaseFile.exists()) {
+            try (InputStream inputStream = getResourceAsStream("database.properties")) {
+                Files.copy(inputStream, databaseFile.toPath());
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+        }
+
+        Properties properties = new Properties();
+        try {
+            properties.load(new FileReader(databaseFile));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        wakaDatabase = new SQLWakaDatabase(
+            new HikariWakaConnector(properties)
+        );
     }
 
     @Override
     public void onEnable() {
+        getProxy().getPluginManager().registerListener(this, new WakaHandler(wakaDatabase));
 
+        BungeeFrame bungeeFrame = new BungeeFrame(this);
+
+        bungeeFrame.registerCommands(
+            new WakaCommand(wakaDatabase)
+        );
     }
 
     @Override
     public void onDisable() {
-
+        wakaDatabase.getConnector()
+            .disconnect();
     }
 }
