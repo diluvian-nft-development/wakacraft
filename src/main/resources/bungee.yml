@@ -1,6 +1,4 @@
 name: Wakacraft
-main: com.teamdiluvian.wakacraft
+main: com.teamdiluvian.wakacraft.WakaPlugin
 version: 1.0.0
 author: TeamDiluvian
-depends:
-    - LuckPerms

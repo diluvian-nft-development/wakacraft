@@ -37,6 +37,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -119,10 +120,15 @@ public class SQLWakaDatabase {
                     return createPlayer(uuid, name, System.currentTimeMillis()).join();
                 }
 
+                Instant created_at = resultSet.getTimestamp("created_at")
+                    .toInstant();
+
+                System.out.println("created_at = " + created_at.toEpochMilli());
+
                 return WakaPlayer.of(
                     unique != null ? unique : uuid, name,
                     resultSet.getLong("measure_time"),
-                    resultSet.getLong("created_at")
+                    created_at.toEpochMilli()
                 );
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -195,7 +201,9 @@ public class SQLWakaDatabase {
                 preparedStatement.setString(1, uniqueId.toString());
 
                 preparedStatement.setString(2, name);
+
                 preparedStatement.setLong(3, measureTime);
+                preparedStatement.setLong(4, measureTime);
 
                 preparedStatement.executeUpdate();
 
