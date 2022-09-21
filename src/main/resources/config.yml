@@ -1,0 +1,13 @@
+Staff-Groups:
+    - 'admin'
+
+Data-Connector:
+    Type: 'MYSQL' # MYSQL, POSTGRESQL, MARIADB or SQLITE
+
+    Username: 'root'
+    Password: 'password'
+
+    Host: 'localhost'
+    Port: '3306'
+
+    Database: 'database'
