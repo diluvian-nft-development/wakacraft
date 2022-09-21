@@ -24,6 +24,7 @@ dependencies {
         'com.zaxxer:HikariCP:5.0.1',
         'org.jetbrains:annotations:23.0.0',
         'com.github.SaiintBrisson.command-framework:bungee:1.2.0',
+        'redis.clients:jedis:4.2.0',
         'mysql:mysql-connector-java:8.0.30'
     )
 

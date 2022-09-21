@@ -39,6 +39,8 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 import java.util.Arrays;
 
@@ -52,6 +54,7 @@ public class WakaCommand {
     private final ProxyServer proxyServer = ProxyServer.getInstance();
 
     private final SQLWakaDatabase wakaDatabase;
+    private final JedisPool jedisPool;
 
     @Command(
         name = "wakacraft",
@@ -123,25 +126,16 @@ public class WakaCommand {
                 return;
             }
 
-            String targetName = wakaPlayer.getPlayerName();
-
-            boolean exists = false;
-            for (ServerInfo serverInfo : proxyServer.getServers().values()) {
-                for (ProxiedPlayer player : serverInfo.getPlayers()) {
-                    if (player.getName().equals(targetName)) {
-                        exists = true;
-                        break;
-                    }
+            try (Jedis jedis = jedisPool.getResource()) {
+                if (!jedis.sismember("wakacraft-current-players", wakaPlayer.getPlayerName())) {
+                    return;
                 }
-            }
 
-            if (exists) {
                 proxiedPlayer.sendMessage(
                     TextComponent.fromLegacyText(
                         colorize("&eThe waka time of &a" + wakaPlayer.getPlayerName() + " &eis &a" + wakaPlayer.getFormatted(System.currentTimeMillis()))
                     )
                 );
-                return;
             }
 
             proxiedPlayer.sendMessage(

@@ -32,6 +32,8 @@ import net.md_5.bungee.api.event.*;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 /**
  * @author Luiz Otávio de Farias Corrêa
@@ -41,6 +43,7 @@ import net.md_5.bungee.event.EventPriority;
 public class WakaHandler implements Listener {
 
     private final SQLWakaDatabase wakaDatabase;
+    private final JedisPool jedisPool;
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerConnect(ServerConnectedEvent event) {
@@ -52,6 +55,10 @@ public class WakaHandler implements Listener {
 
         wakaDatabase.loadPlayer(proxiedPlayer.getUniqueId(), proxiedPlayer.getName())
             .whenComplete((player, throwable) -> {
+                try (Jedis jedis = jedisPool.getResource()) {
+                    jedis.sadd("wakacraft-current-players", proxiedPlayer.getName());
+                }
+
                 if (throwable != null) {
                     throwable.printStackTrace();
                 }
@@ -68,6 +75,10 @@ public class WakaHandler implements Listener {
 
         wakaDatabase.savePlayer(proxiedPlayer.getUniqueId(), proxiedPlayer.getName(), System.currentTimeMillis())
             .whenComplete((player, throwable) -> {
+                try (Jedis jedis = jedisPool.getResource()) {
+                    jedis.srem("wakacraft-current-players", proxiedPlayer.getName());
+                }
+
                 if (throwable != null) {
                     throwable.printStackTrace();
                 }
